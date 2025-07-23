@@ -4,15 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>মাসিক বেতন</title>
-   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- বাড়ির নামের তালিকা পেজে হোম বাটন -->
-  <button id="back-to-index" onclick="window.location.href='index.html'">←</button>
-
   <header id="select-header">
-    <h2>বাড়ির নাম সিলেক্ট করুন</h2> 
+    <h2>বাড়ির নাম সিলেক্ট করুন</h2> 
   </header>
 
   <header id="salary-header" style="display:none;">
@@ -21,7 +17,7 @@
 
   <div class="container">
     <div id="house-list" class="house-list"></div>
-    <button id="back-to-house-list">←</button>
+    <input type="text" id="search-input" class="search-input" placeholder="নাম দিয়ে খুঁজুন" style="display:none;"/>
     <div id="salary-table"></div>
   </div>
 
@@ -30,41 +26,41 @@
 
     const houseList = document.getElementById('house-list');
     const salaryTable = document.getElementById('salary-table');
-    const backToIndexBtn = document.getElementById('back-to-index');
-    const backToHouseListBtn = document.getElementById('back-to-house-list');
+    const searchInput = document.getElementById('search-input');
 
     let dataByHouse = {};
     let currentMonths = [];
-
-    backToIndexBtn.style.display = 'inline-block';
-    backToHouseListBtn.style.display = 'none';
-
-    backToHouseListBtn.onclick = () => {
-      showHouseList(currentMonths);
-    };
+    let currentMonthIndex = null;
 
     fetch(sheetURL)
       .then(res => res.text())
       .then(csv => {
         const rows = csv.trim().split('\n').map(r => r.split(','));
-        currentMonths = rows[0].slice(2);
+        currentMonths = rows[0].slice(2).map(m => m.trim());
+
+        const today = new Date();
+        const currentMonthName = today.toLocaleString('bn-BD', { month: 'long' }).trim();
+        currentMonthIndex = currentMonths.findIndex(m => m.includes(currentMonthName));
+
         rows.slice(1).forEach(row => {
           const house = row[0];
           const name = row[1];
           const amounts = row.slice(2);
+          const isEmpty = name.trim() === '' && amounts.every(a => a.trim() === '');
+          if (isEmpty) return;
+
           if (!dataByHouse[house]) dataByHouse[house] = [];
           dataByHouse[house].push({ name, amounts });
         });
 
+        history.replaceState({ view: 'list' }, '', '');
         showHouseList(currentMonths);
       });
 
     function showHouseList(months) {
       salaryTable.innerHTML = '';
       houseList.innerHTML = '';
-
-      backToIndexBtn.style.display = 'inline-block';
-      backToHouseListBtn.style.display = 'none';
+      searchInput.style.display = 'none';
 
       document.getElementById('select-header').style.display = 'block';
       document.getElementById('salary-header').style.display = 'none';
@@ -73,39 +69,65 @@
         const btn = document.createElement('button');
         btn.textContent = house;
         btn.className = 'house-btn';
-        btn.onclick = () => showSalaryTable(house, months);
+        btn.onclick = () => {
+          history.pushState({ view: 'table', house }, '', `#${house}`);
+          showSalaryTable(house, months);
+        };
         houseList.appendChild(btn);
       });
     }
 
     function showSalaryTable(house, months) {
       houseList.innerHTML = '';
+      searchInput.style.display = 'inline-block';
 
-      backToHouseListBtn.style.display = 'inline-block';
+      const tableData = dataByHouse[house] || [];
 
-      salaryTable.innerHTML = `
-        <h3>${house}</h3>
-        <table>
-          <thead>
-            <tr><th>নাম</th>${months.map(m => `<th>${m}</th>`).join('')}</tr>
-          </thead>
-          <tbody>
-            ${dataByHouse[house].map(row => `
-              <tr>
-                <td>${row.name}</td>
-                ${row.amounts.map(a => `<td class="${a.trim() === '0' ? 'unpaid' : 'paid'}">${a}</td>`).join('')}
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+      function renderTable(filter = '') {
+        const filtered = tableData.filter(r => r.name.includes(filter));
+        salaryTable.innerHTML = `
+          <h3>${house}</h3>
+          <table>
+            <thead>
+              <tr><th>নাম</th>${months.map(m => `<th>${m}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${filtered.map(row => `
+                <tr>
+                  <td>${row.name}</td>
+                  ${row.amounts.map((a, i) => {
+                    const value = parseFloat(a.trim());
+                    if (isNaN(value) || value === 0) {
+                      return `<td class="unpaid">${a}</td>`;
+                    } else if (i > currentMonthIndex) {
+                      return `<td class="advance">${a}</td>`;
+                    } else {
+                      return `<td class="paid">${a}</td>`;
+                    }
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
 
-      backToIndexBtn.style.display = 'none';
+      searchInput.value = '';
+      searchInput.oninput = () => renderTable(searchInput.value.trim());
+      renderTable();
 
       document.getElementById('select-header').style.display = 'none';
       document.getElementById('salary-header').style.display = 'block';
-      document.getElementById('salary-header-text').textContent = `মাসিক বেতনের তালিকা`;
+      document.getElementById('salary-header-text').textContent = `${house} - মাসিক বেতনের তালিকা`;
     }
+
+    window.onpopstate = function(event) {
+      if (event.state && event.state.view === 'table') {
+        showSalaryTable(event.state.house, currentMonths);
+      } else {
+        showHouseList(currentMonths);
+      }
+    };
   </script>
 </body>
 </html>

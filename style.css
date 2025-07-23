@@ -163,6 +163,12 @@ main section p, main section ul {
   font-size: 1rem;
   line-height: 1.6;
 }
+#date-section {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-top: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+}
 
 main section ul li {
   margin-bottom: 8px;
@@ -290,26 +296,29 @@ footer {
   tr:nth-child(even) {
     background-color: #f9f9f9;
   }
-  .paid {
-    color: green;
-    font-weight: bold;
-  }
-  .unpaid {
-    color: red;
-    font-weight: bold;
-  }
-  h2 {
+  .search-input {
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 300px;
+    }
+    .paid { background-color: #e0ffe0; }
+    .unpaid { background-color: #ffe0e0; }
+    .advance { background-color: #e0f7ff; }
+    .highlight { font-weight: bold; }
+    h2 {
     text-align: center;
     margin-bottom: 15px;
     font-size: 28px;
     color: white;
-  }
-  h3 {
+    }
+    h3 {
     text-align: center;
     margin-bottom: 15px;
     font-size: 28px;
     color: #2980b9;
-  }
+    }
   /* Responsive Design */
   @media (max-width: 768px) {
     #back-to-index {
