@@ -39,6 +39,49 @@ header {
       0% { transform: translateX(0); }
       100% { transform: translateX(-100%); }
     }
+
+.prayer-title {
+  text-align: left;
+  margin-bottom: 30px;
+  font-size: 25px;
+  color: #198754;
+}
+
+.prayer-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.prayer-card {
+  background-color: #eaf4ff;
+  border: 1px solid #bcdfff;
+  border-radius: 8px;
+  padding: 12px 18px;
+  min-width: 100px;
+  text-align: center;
+  flex: 1 0 40%;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.prayer-card strong {
+  display: block;
+  font-size: 16px;
+  color: #333;
+}
+
+.prayer-card span {
+  font-size: 14px;
+  color: #555;
+}
+
+@media (max-width: 500px) {
+  .prayer-card {
+    flex: 1 0 100%;
+  }
+}
+
     .donation-card {
       background: #f8f9fa;
       border-radius: 10px;
@@ -153,10 +196,17 @@ nav.nav-pills a.nav-link:hover {
 /* =============================
    Main Content Styles
 ============================= */
-main section h2, main section h3 {
+main section h2 {
   color: #198754;
   font-weight: 700;
   margin-bottom: 15px;
+}
+
+main section h3 {
+  color: #198754;
+  font-size: 25px;
+  margin-bottom: 15px;
+  text-align: left;
 }
 
 main section p, main section ul {
@@ -173,6 +223,25 @@ main section p, main section ul {
 main section ul li {
   margin-bottom: 8px;
 }
+
+/* =============================
+   Google Map 
+============================= */
+.map-responsive {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+}
+
+.map-responsive iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 
 /* =============================
    Footer Styles

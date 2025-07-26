@@ -60,6 +60,41 @@
             <li>ইমাম সাহেবের জুন মাসের বেতন প্রদান সম্পন্ন</li>
           </ul>
         </section>
+
+        <!-- Added Prayer Times Section -->
+        <section class="prayer-times-card">
+  <h3 class="prayer-title">নামাজের সময়সূচী</h3>
+  <div class="prayer-cards" id="prayer-times-container">
+    <!-- ডেটা এখানে বসবে -->
+  </div>
+</section>
+        <script>
+  const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSD4MEZvna0jVLBCpuF1JvLL9TkWYsPvEbgWvLRp6-fJ4wK70RblJJidJ6O6whz_AddKyfkkv9cAbUw/pub?output=csv';
+
+  fetch(csvUrl)
+    .then(res => res.text())
+    .then(csv => {
+      const rows = csv.trim().split('\n').map(row => row.split(','));
+      const container = document.getElementById('prayer-times-container');
+
+      // হেডার বাদ দিয়ে ডেটা রেন্ডার করো
+      rows.slice(1).forEach(([namaz, time]) => {
+        const div = document.createElement('div');
+        div.className = 'prayer-card';
+        div.innerHTML = `<strong>${namaz}</strong><span>${time}</span>`;
+        container.appendChild(div);
+      });
+    })
+    .catch(err => {
+      console.error('নামাজের সময় লোড করতে সমস্যা:', err);
+    });
+</script>
+
+  
+
+
+
+        
         <!-- Mobile Donation Section -->
         <section class="mt-5 donation-card">
           <h4 class="text-center mb-3">📱 মোবাইলের মাধ্যমে দান করুন</h4>
@@ -95,7 +130,7 @@
 
         <!-- Imam -->
         <div class="imam mb-5 text-center">
-          <img src="imam.jpg" alt="ইমাম সাহেবের ছবি" class="imam-photo mb-3" />
+          <img src="images/imam.jpg" alt="ইমাম সাহেবের ছবি" class="imam-photo mb-3" />
           <p class="designation">ইমাম সাহেব</p>
           <p class="name">মাওলানা আকরাম হোসাইন</p>
           <p class="phone">01612-285112</p>
@@ -145,6 +180,22 @@
     </div>
   </div>
 
+  <!-- Google Map Section -->
+<section class="mt-5 text-center">
+  <h4>🕌 মসজিদের অবস্থান</h4>
+  <div class="map-responsive mt-3">
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d465.26355477321977!2d90.06857193524374!3d24.99511160645942!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3757d5d5aec6d8b1%3A0x4059afe4fa9011e5!2z4Kak4Ka_4Kay4KaV4Ka-4Kao4KeN4Kam4Ka_IOCmquCnguCmsOCnjeCmrCDgpqrgpr7gp5zgpr4g4Kac4Ka-4Kau4KeHIOCmruCmuOCmnOCmv-Cmpg!5e0!3m2!1sen!2sbd!4v1753388732572!5m2!1sen!2sbd"
+      width="100%"
+      style="border:0;" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</section>
+
+
   <!-- Footer -->
   <footer>
     © ২০২৫ তিলকান্দি পূর্বপাড়া জামে মসজিদ
@@ -174,10 +225,6 @@
   // এখানে আমরা শুধু আজকের হিজরি তারিখ দেখাবেন ধরে নিচ্ছি (approximate)
   function getHijriDate() {
     const gDate = new Date();
-    // এই ডেটা hardcode করা ২০২৫ সালের জুলাই মাসের জন্য
-    // এভাবে লাইব্রেরি ছাড়া কঠিন, তাই approximation নিচ্ছি:
-    // 22 জুলাই 2025 = 16 জিলহজ 1446 (যেমন তুমি চেয়েছো)
-    // তাই এই উদাহরণে আমরা fixed রিটার্ন করছি:
     return {
       day: 16,
       month: 11,  // 0 indexed, so 11 = জিলহজ
